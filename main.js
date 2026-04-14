@@ -22,15 +22,29 @@ overlay.addEventListener("click", hamburgerDisplay);
 
 // === swipe testimonial cards ===
 
+function setActiveDot(index) {
+  dots.forEach((dot, i) => {
+    dot.classList.toggle("dot-displayed", i === index);
+  });
+}
+
 const sliderContainer = document.querySelector(
   ".section-testimonials__wrapper"
 );
 const testimonialCards = document.querySelectorAll(
   ".section-testimonials__card"
 );
-const width = window.innerWidth * 0.9 + 24;
-const startingPosition = width * 3;
 const dots = document.querySelectorAll(".dot");
+
+let width = window.innerWidth * 0.9 + 24;
+const startingPosition = width * 3;
+
+function updateWidth() {
+  width = window.innerWidth * 0.9 + 24;
+}
+
+window.addEventListener("resize", updateWidth);
+updateWidth();
 
 function removeDot() {
   dots.forEach((item) => {
@@ -38,86 +52,65 @@ function removeDot() {
   });
 }
 
+// === click behavior ===
+
 testimonialCards.forEach((card, index) => {
-  card.addEventListener("click", (e) => {
-    removeDot();
-    if (e.target === testimonialCards[3]) {
+  card.addEventListener("click", () => {
+    const isLast = index === testimonialCards.length - 1;
+    if (isLast) {
       sliderContainer.scrollLeft -= startingPosition;
-      dots[0].classList.add("dot-displayed");
+      setActiveDot(0);
     } else {
       sliderContainer.scrollLeft += width;
-      dots[index + 1].classList.add("dot-displayed");
+      setActiveDot(index + 1);
     }
   });
 });
 
 // === scroll target observer ===
 
-const callback1 = (entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      removeDot();
-      dots[0].classList.add("dot-displayed");
-    }
-  });
-};
-const callback2 = (entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      removeDot();
-      dots[1].classList.add("dot-displayed");
-    }
-  });
-};
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const index = [...testimonialCards].indexOf(entry.target);
+        setActiveDot(index);
+      }
+    });
+  },
+  {
+    root: sliderContainer,
+    threshold: 0.8,
+  }
+);
 
-const callback3 = (entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      removeDot();
-      dots[2].classList.add("dot-displayed");
-    }
-  });
-};
+testimonialCards.forEach((card) => observer.observe(card));
 
-const callback4 = (entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      removeDot();
-      dots[3].classList.add("dot-displayed");
-    }
-  });
-};
+// === input field validation ===
 
-const observer = new IntersectionObserver(callback1, {
-  root: null,
-  rootMargin: "0px",
-  scrollMargin: "0px",
-  threshold: 0.8,
+const form = document.querySelector("form");
+const input = document.querySelector("input");
+const small = document.querySelector("small");
+const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function error() {
+  small.classList.remove("hide");
+  input.classList.add("error-border");
+}
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (input.value.trim() == "") {
+    error();
+    small.innerHTML = "This field is required.";
+  } else if (!regex.test(input.value)) {
+    error();
+    small.innerHTML = "Please enter a valid Email.";
+  } else {
+    input.classList.remove("error-border");
+    small.innerHTML = "Thank you!";
+    setTimeout(() => {
+      small.classList.add("hide");
+    }, 2000);
+  }
 });
-
-const observer2 = new IntersectionObserver(callback2, {
-  root: null,
-  rootMargin: "0px",
-  scrollMargin: "0px",
-  threshold: 0.8,
-});
-
-const observer3 = new IntersectionObserver(callback3, {
-  root: null,
-  rootMargin: "0px",
-  scrollMargin: "0px",
-  threshold: 0.8,
-});
-
-const observer4 = new IntersectionObserver(callback4, {
-  root: null,
-  rootMargin: "0px",
-  scrollMargin: "0px",
-  threshold: 0.8,
-});
-
-const [card1, card2, card3, card4] = testimonialCards;
-observer.observe(card1);
-observer2.observe(card2);
-observer3.observe(card3);
-observer4.observe(card4);

@@ -102,8 +102,11 @@ header{
   top: 0px;
   left: 0px;
   margin: 0 auto 32px auto;
-  background: var(--white);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(255, 255, 255, .1));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
+
 
 nav {
   display: flex;
@@ -131,7 +134,7 @@ nav {
 .hamburger-menu{
   background-color: var(--white);
   border-radius: 8px;
-width: clamp(600px, 90vw, 700px);
+width: clamp(360px, 90vw, 700px);
 margin: auto;
 padding: 64px 0;
 position: fixed;
@@ -567,7 +570,7 @@ footer {
 
 input {
   font-family: var(--ff);
-  color: var(--mid-gray);
+  color: var(--darker-gray);
   border: none;
   padding: 14px 24px;
   border-radius: 100px;
@@ -576,6 +579,14 @@ input {
 
 input::placeholder {
   color: hsla(233, 12%, 68%, 0.8);
+}
+
+input:focus{
+  outline: none;
+}
+
+.error-border{
+ border: 2px solid var(--orange400);
 }
 
 .submit-btn {
@@ -635,6 +646,10 @@ small {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+form{
+  margin-bottom: 16px;
 }
 
 .attribution {
